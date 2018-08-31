@@ -1,5 +1,5 @@
 // false for Mapquest, true for Google
-const usingGoogle = false;
+const usingGoogle = true;
 const Geocoder = usingGoogle ? require('google-geocoder') : require('mapquest-geocoder');
 const { readFileSync, writeFileSync, createWriteStream } = require('fs');
 
@@ -70,7 +70,7 @@ function getUniqueLocations(data) {
     });
     resolve(entries);
   }).then((entries) => {
-    // split entires into sets of 5k
+    // split entries into sets of 5k
     const sets = chunkArray(entries, 5000);
     let count = 0;
     sets.forEach((set) => {
@@ -108,40 +108,40 @@ function geoCodeFromUnique(data) {
     });
     resolve(data);
   }).then((entries) => {
-    const gheader = 'Date,Time,Place Id,Latitude,Longitude,Bldg Number, Street, City, County, State, Country, Zip, Post Route\n';
-    const mheader = 'Date,Time,Latitude,Longitude,Street, City, State, Country, Zip\n';
+    const sharedheader = 'Date,Time,Latitude,Longitude,';
+    const gheader = `${sharedheader}Place Id,Bldg Number, Street, City, County, State, Country, Zip, Post Route\n`;
+    const mheader = `${sharedheader}Street, City, State, Country, Zip\n`;
     const header = usingGoogle ? gheader : mheader;
     const stream = createWriteStream('chrono.csv', { flags: 'a' });
     stream.write(header);
     const locs = [];
-    Object.keys(entries).forEach((index) => {
-      const coord = `${entries[index].coord}`;
+    Object.keys(entries).forEach((index) => {      
+      const entry = Object.assign(new Location(`${entries[index].lat}, ${entries[index].long}`), entries[index]);
       /*  Using Google API */
       if (usingGoogle) {
-        getInfo(coord) // billable $$$
+        getInfo(entry.coord) // billable $$$
           .then((info) => {
-            entries[index].formatted_address = info[0].formatted_address;
-            entries[index].address_components = info[0].googleResponse.address_components;
-            entries[index].place_id = info[0].googleResponse.place_id;
-            return entries;
+            entry.formatted_address = info[0].formatted_address;
+            entry.address_components = info[0].googleResponse.address_components;
+            entry.place_id = info[0].googleResponse.place_id;
           })
-          .then((entry) => {
+          .then(() => {
             // append to stream
-            stream.write(entries[entry].asChronologicalString());
+            stream.write(entry.asChronologicalString());
           });
       }
-      locs.push(coord);
+      locs.push(entry.coord);
     });
     /* Using Mapquest API */
     if (!usingGoogle) {
       getInfo(locs) // billable $$$
         .then((info) => {
           for (let i = 0; i < info.received.length; i += 1) {
-            entries[i].address_components = info.received[i][0].locations[0];
             const entry = Object.assign(new Location(`${entries[i].lat}, ${entries[i].long}`), entries[i]);
+            entry.address_components = info.received[i][0].locations[0];
             stream.write(entry.asChronologicalString());
           }
-          return entries;
+          // return entries;
         });
     }
   }).catch((error) => {
