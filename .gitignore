@@ -1,7 +1,7 @@
 node_modules
-test file
-Location History.zip
-Location History.json
-Location History
 *.key
+*.json
+*.csv
 .vscode
+!package.json
+!package-lock.json

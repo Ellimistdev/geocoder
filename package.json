@@ -1,0 +1,34 @@
+{
+  "name": "geocoder",
+  "version": "1.0.0",
+  "description": "A tool that converts Google location data into human readable csv",
+  "main": "index.js",
+  "dependencies": {
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "google-geocoder": "^0.2.1",
+    "mapquest-geocoder": "^1.1.0"
+  },
+  "devDependencies": {
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/endotnick/geocoder.git"
+  },
+  "keywords": [
+    "geocoder",
+    "google",
+    "mapquest"
+  ],
+  "author": "Nick Rodriguez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/endotnick/geocoder/issues"
+  },
+  "homepage": "https://github.com/endotnick/geocoder#readme"
+}
